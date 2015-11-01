@@ -21,12 +21,12 @@ static struct option long_options[] = {
     { "target", required_argument, NULL, 't' }
 };
 
-static void makePath(const char * dir, std::string &path);
-static void ceFind(std::string &path, const char * relativePath= "\\");
+static void makePath(const char *dir, std::string &path);
+static void ceFind(std::string &path, const char *relativePath= "\\");
 static void ceReplace();
 static void ceScan();
 
-int main(int argc, char * argv[]) {
+int main(int argc, char *argv[]) {
     char opt = 0;
     std::string path;
     HMODULE module;
@@ -61,12 +61,12 @@ int main(int argc, char * argv[]) {
     return 0;
 }
 
-void makePath(const char * dir, std::string &path) {
+void makePath(const char *dir, std::string &path) {
     path.append(dir);
     path.append("\\*.*");
 }
 
-void ceFind(std::string &path, const char * relativePath/*= "\\"*/) {
+void ceFind(std::string &path, const char *relativePath/* = "\\" */) {
     WIN32_FIND_DATA fileData;
     HANDLE findHandle = NULL;
     
