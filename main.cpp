@@ -7,7 +7,7 @@
 #include "getopt.h"
 #define PATH_MAX_LEN 128
 
-typedef int (__stdcall * FuncRtlAdjustPrivilege)(ULONG, BOOLEAN, BOOLEAN, PBOOLEAN);
+typedef int (__stdcall *FuncRtlAdjustPrivilege)(ULONG, BOOLEAN, BOOLEAN, PBOOLEAN);
 
 static BOOL gRecursion = FALSE;
 static BOOL gScan      = FALSE;
@@ -23,8 +23,9 @@ static struct option long_options[] = {
 
 static void makePath(const char *dir, std::string &path);
 static void ceFind(std::string &path, const char *relativePath= "\\");
-static void ceReplace();
-static void ceScan();
+static void ceReplace(void);
+static void ceScan(void);
+static void usage(void);
 
 int main(int argc, char *argv[]) {
     char opt = 0;
@@ -44,13 +45,15 @@ int main(int argc, char *argv[]) {
         makePath(currentDir, path);
         // printf("%s", path.c_str());
 
-        while ((opt = getopt_long(argc, argv, "rso:t:", long_options, NULL)) != EOF) {
+        while ((opt = getopt_long(argc, argv, "rso:t:h?", long_options, NULL)) != EOF) {
             switch (opt) {
                 case 'o': gObject = optarg; break;
                 case 'r': gRecursion = TRUE; break;
                 case 's': gScan = TRUE; break;
                 case 't': gTarget = optarg; break;
-                default: exit(-1);
+                case 'h':
+                case '?': usage();
+                default: usage();
             }
         }
         // printf("%s %s %d %d", gObject, gTarget, gRecursion, gScan);
@@ -104,7 +107,7 @@ void ceFind(std::string &path, const char *relativePath/* = "\\" */) {
     }
 }
 
-static void ceReplace() {
+static void ceReplace(void) {
     char path[PATH_MAX_LEN] = { 0 };
     if (gScan)
         ceScan();
@@ -128,7 +131,7 @@ static void ceReplace() {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
 }
 
-static void ceScan() {
+static void ceScan(void) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     printf("Total of %d File(s) Were Found.\n", gList.size());
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
@@ -140,4 +143,15 @@ static void ceScan() {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     std::cout << "Start to Replace..." << std::endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
+}
+
+static void usage() {
+    sprintf(stderr,
+        "\t\tbme -sr [-o obj] [-t target]\n"
+        "\t -s|scan\t print info\n"
+        "\t -r|recursion\t subdir\n"
+        "\t -o|object\t source extension\n"
+        "\t -t|target\t target extension\n"
+        "\n"
+    );
 }
